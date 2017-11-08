@@ -1,0 +1,47 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/security
+http://www.springframework.org/schema/security/spring-security.xsd">
+<context:component-scan base-package="com.niit"></context:component-scan>
+<security:http auto-config="true" use-expressions="true" >
+<!-- http://locahost:8080/ShoppingCart/intercept_url -->
+
+<!--  intercept url starting-->
+		<security:intercept-url pattern="/Admin/**"
+			access="hasRole('ADMIN')" />
+
+    	<security:intercept-url pattern="/myCart/**"
+			access="hasRole('USER')" />
+
+		<security:intercept-url pattern="/cart_checkout/**"
+			access="hasRole('USER')" />
+<!--  intercept url Ending-->	
+			
+	
+		<security:access-denied-handler
+			error-page="/accessDenied" />
+		<security:csrf disabled="true" />
+
+		 <security:logout logout-url="/logout" /> 
+
+	
+
+   <!--  login is name of your login page -->
+   <!-- j_spring_security_check should same as in the login.jsp
+   			<form action="/j_spring_security_check" -->
+		<security:form-login   password-parameter="password" username-parameter="username" authentication-failure-url="/loginError" default-target-url="/validate" login-processing-url="/j_spring_security_check" login-page="/login"/>
+	</security:http>
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:jdbc-user-service
+				data-source-ref="dataSource"
+				users-by-username-query="select mail as username, password, 'true' as enabled from user where mail=?"
+				authorities-by-username-query="select mail as username, role from user where mail=?" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+</beans>
